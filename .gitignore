@@ -1,6 +1,12 @@
+# JetBrains
+/.idea/
+
 # Gradle
 /.gradle/
 /build/
+
+# Kotlin/JS
+/kotlin-js-store/
 
 # Result
 /output/

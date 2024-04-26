@@ -6,7 +6,7 @@ plugins {
 }
 
 group = "me.npanuhin"
-version = "edu_kotlin-js_todo_list"
+version = "1.0"
 
 repositories {
     mavenCentral()

@@ -1,3 +1,4 @@
+<img align="right" src="https://github.com/npanuhin/edu_kotlin-js_todo_list/actions/workflows/lint.yml/badge.svg?branch=master&event=push">
 <h1 align="center">Todo list in Kotlin/JS</h1>
 <h4 align="center">A small frontend application for managing a todo list</h4>
 
