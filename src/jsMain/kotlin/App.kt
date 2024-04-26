@@ -10,6 +10,7 @@ import kotlinx.serialization.json.Json
 import react.FC
 import react.Props
 import react.dom.html.InputType
+import react.dom.html.ReactHTML.br
 import react.dom.html.ReactHTML.button
 import react.dom.html.ReactHTML.div
 import react.dom.html.ReactHTML.h1
@@ -42,7 +43,7 @@ val defaultTodos = listOf(
 
             Add a new todo item by filling out the form on the right.
             You can also delete or mark items as completed by clicking the buttons below.
-        """
+        """.trimIndent()
         ), true
     ),
     TodoItemWithState(
@@ -52,7 +53,7 @@ val defaultTodos = listOf(
             - Hearty Durian
             - Mighty Bananas
             - Spicy Pepper
-        """
+        """.trimIndent()
         ), false
     ),
     TodoItemWithState(
@@ -64,7 +65,7 @@ val defaultTodos = listOf(
             - Sort by completion state
             - Delete an item
             - Reload the page
-        """
+        """.trimIndent()
         ), false
     )
 ).reversed()
@@ -76,15 +77,14 @@ val App = FC<Props> {
     when (localStorage.getItem("new_user_flag")) {
         "true" -> {
             @Suppress("USE_LAST_INDEX")
-            (localStorage.length - 1 downTo 0).mapNotNull { index ->
-                localStorage.key(index)
-                    ?.let { key ->
-                        if (key == "new_user_flag") null else localStorage.getItem(key)
-                    }
-                    ?.let { value ->
-                        Json.decodeFromString<TodoItemWithState>(value)
-                    }
-            }
+            (localStorage.length - 1 downTo 0)
+                .mapNotNull { index ->
+                    localStorage.key(index)
+                        ?.takeIf { it != "new_user_flag" }
+                        ?.let { localStorage.getItem(it) }
+                }
+                .map { Json.decodeFromString<TodoItemWithState>(it) }
+                .sortedBy { it.todoItem.id }
         }
 
         else -> {
@@ -167,7 +167,12 @@ val App = FC<Props> {
 
                     p {
                         className = ClassName("content")
-                        +item.content
+                        item.content.split("\n").forEachIndexed { index, line ->
+                            if (index != 0) {
+                                br()
+                            }
+                            +line
+                        }
                     }
 
                     button {
