@@ -70,5 +70,7 @@ diktat {
     inputs {
         include("**/*.kts")
         include("**/*.kt")
+        exclude("resources/")
+        exclude("build/")
     }
 }
