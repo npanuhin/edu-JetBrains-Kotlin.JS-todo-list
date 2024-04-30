@@ -240,7 +240,8 @@ h1 {
 
 #new_title,
 #new_content,
-#add_todo input[type="submit"] {
+#add_todo input[type="submit"],
+#clear_all {
 	display: block;
 	box-sizing: border-box;
 	width: 100%;
@@ -259,7 +260,8 @@ h1 {
 	margin-top: 80px;
 }
 
-#add_todo input[type="submit"] {
+#add_todo input[type="submit"],
+#clear_all {
 	width: 130px;
 	max-width: 100%;
 	text-align: center;
@@ -274,6 +276,13 @@ h1 {
 /* ------------------------------------------------------------------------------------------------------------------ */
 
 #todo_list label:hover,
-#add_todo input[type="submit"]:hover {
+#add_todo input[type="submit"]:hover,
+#clear_all:hover {
 	transform: scale(1.05);
+}
+
+/* ------------------------------------------------------------------------------------------------------------------ */
+
+#clear_all {
+	margin-top: 50px;
 }

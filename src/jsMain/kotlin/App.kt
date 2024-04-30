@@ -70,9 +70,9 @@ val defaultTodos = listOf(
     )
 ).reversed()
 
-val App = FC<Props> {
-    val preTodos = mutableListOf<TodoItem>()
-    val preCompletionState = mutableMapOf<Int, Boolean>()
+fun getTodos(): Pair<List<TodoItem>, Map<Int, Boolean>> {
+    val todos = mutableListOf<TodoItem>()
+    val completionState = mutableMapOf<Int, Boolean>()
 
     when (localStorage.getItem("new_user_flag")) {
         "true" -> {
@@ -99,9 +99,15 @@ val App = FC<Props> {
             defaultTodos
         }
     }.forEach {
-        preTodos += it.todoItem
-        preCompletionState[it.todoItem.id] = it.completed
+        todos += it.todoItem
+        completionState[it.todoItem.id] = it.completed
     }
+
+    return todos to completionState
+}
+
+val App = FC<Props> {
+    val (preTodos, preCompletionState) = getTodos()
 
     var todos: List<TodoItem> by useState(preTodos)
     var completionState: Map<Int, Boolean> by useState(preCompletionState)
@@ -229,6 +235,18 @@ val App = FC<Props> {
                     newTodoItem.id.toString(),
                     Json.encodeToString(TodoItemWithState(newTodoItem, false))
                 )
+            }
+        }
+
+        input {
+            id = "clear_all"
+            type = InputType.button
+            value = "Clear all"
+            onClick = {
+                localStorage.clear()
+                val (newTodos, newCompletionState) = getTodos()
+                todos = newTodos
+                completionState = newCompletionState
             }
         }
     }
