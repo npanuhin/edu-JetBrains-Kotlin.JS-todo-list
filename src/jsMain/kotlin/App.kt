@@ -22,11 +22,17 @@ import react.dom.html.ReactHTML.textarea
 import react.dom.html.ReactHTML.ul
 import react.useState
 
+const val LS_TODOS_KEY = "_kjs-todo_"
+const val LS_EXISTING_USER_FLAG = "_kjs-todo-sys_existing-user"
+const val LS_EXISTING_USER_VALUE = "true"
+
 @Serializable
 data class TodoItem(
     val id: Int,
     val title: String,
     val content: String,
+
+    val name: String = LS_TODOS_KEY + id.toString()
 )
 
 @Serializable
@@ -74,13 +80,13 @@ fun getTodos(): Pair<List<TodoItem>, Map<Int, Boolean>> {
     val todos = mutableListOf<TodoItem>()
     val completionState = mutableMapOf<Int, Boolean>()
 
-    when (localStorage.getItem("new_user_flag")) {
-        "true" -> {
+    when (localStorage.getItem(LS_EXISTING_USER_FLAG)) {
+        LS_EXISTING_USER_VALUE -> {
             @Suppress("USE_LAST_INDEX")
             (localStorage.length - 1 downTo 0)
                 .mapNotNull { index ->
                     localStorage.key(index)
-                        ?.takeIf { it != "new_user_flag" }
+                        ?.takeIf { it.startsWith(LS_TODOS_KEY) }
                         ?.let { localStorage.getItem(it) }
                 }
                 .map { Json.decodeFromString<TodoItemWithState>(it) }
@@ -88,13 +94,10 @@ fun getTodos(): Pair<List<TodoItem>, Map<Int, Boolean>> {
         }
 
         else -> {
-            localStorage.setItem("new_user_flag", "true")
+            localStorage.setItem(LS_EXISTING_USER_FLAG, LS_EXISTING_USER_VALUE)
 
-            for (todoItem in defaultTodos) {
-                localStorage.setItem(
-                    todoItem.todoItem.id.toString(),
-                    Json.encodeToString(todoItem)
-                )
+            defaultTodos.forEach { item ->
+                localStorage.setItem(item.todoItem.name, Json.encodeToString(item))
             }
             defaultTodos
         }
@@ -186,7 +189,7 @@ val App = FC<Props> {
                         onClick = {
                             completionState = completionState.filterKeys { it != item.id }
                             todos = todos.filter { it.id != item.id }
-                            localStorage.removeItem(item.id.toString())
+                            localStorage.removeItem(item.name)
                         }
                     }
 
@@ -195,10 +198,7 @@ val App = FC<Props> {
                         onClick = {
                             val newState = !(completionState[item.id] ?: false)
                             completionState += (item.id to newState)
-                            localStorage.setItem(
-                                item.id.toString(),
-                                Json.encodeToString(TodoItemWithState(item, newState))
-                            )
+                            localStorage.setItem(item.name, Json.encodeToString(TodoItemWithState(item, newState)))
                         }
                     }
                 }
@@ -231,10 +231,7 @@ val App = FC<Props> {
                 )
                 todos += newTodoItem
                 completionState += (newTodoItem.id to false)
-                localStorage.setItem(
-                    newTodoItem.id.toString(),
-                    Json.encodeToString(TodoItemWithState(newTodoItem, false))
-                )
+                localStorage.setItem(newTodoItem.name, Json.encodeToString(TodoItemWithState(newTodoItem, false)))
             }
         }
 
